@@ -108,7 +108,24 @@ class DataSetCreator():
             return 'snow'
         else:
             raise RuntimeError('that is not a good precip type value')
+    
+    def seperate_timestamp(self, df: pd.DataFrame, column_order=['timestamp', 'year', 'month', 'day', 'hour', 'minute', 'day_of_week', 'weekend', 'holiday']):
+        df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+        df['year'] = df['timestamp'].dt.year
+        df['month'] = df['timestamp'].dt.month
+        df['day'] = df['timestamp'].dt.day
+        df['hour'] = df['timestamp'].dt.hour
+        df['minute'] = df['timestamp'].dt.minute
+        df['day_of_week'] = df['timestamp'].dt.dayofweek
+        df['weekend'] = df['day_of_week'].apply(lambda x: 1 if x > 4 else 0)
 
+        columns = df.columns.tolist()
+        for col in column_order:
+            columns.remove(col)
+        
+        df = df[column_order + columns]
+
+        return df
 
 if __name__ == '__main__':
     
@@ -124,12 +141,19 @@ if __name__ == '__main__':
 
     df = pd.read_csv('processed_data.csv')
 
-    df = creator.add_weather_data(df)
-
-    print(df.head())
 
     df = creator.add_holidays(df)
 
     print(df.head())
+
+    df = creator.add_weather_data(df)
+
+    print(df.head())
+
+    df = creator.seperate_timestamp(df)
+
+    print(df.head())
+
+    df.info()
 
 
