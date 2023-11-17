@@ -29,7 +29,7 @@ class DataSetCreator():
         df.sort_values(by='timestamp', inplace=True)
 
         household_count = df.groupby('timestamp')[['LCLid']].nunique()
-        household_count = household_count.rename(columns={"LCLid": "Household Count"})
+        household_count = household_count.rename(columns={"LCLid": "houses"})
 
         df['energy(kWh/hh)'] = pd.to_numeric(df['energy(kWh/hh)'], errors='coerce')
 
@@ -155,5 +155,7 @@ if __name__ == '__main__':
     print(df.head())
 
     df.info()
+
+    df.to_csv('processed_data.csv', index=True)
 
 
