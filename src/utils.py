@@ -155,6 +155,6 @@ if __name__ == '__main__':
 
     df.info()
 
-    df.to_csv('processed_data.csv', index=True)
+    df.to_csv('processed_data.csv', index=False)
 
 
