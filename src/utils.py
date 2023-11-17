@@ -82,6 +82,17 @@ class DataSetCreator():
 
         return df
     
+    def add_holidays(self, df, holiday_path='uk_bank_holidays.csv'):
+        holidays_df = pd.read_csv(os.path.join(self.data_path, holiday_path))
+        holidays_df = holidays_df.drop('Type', axis=1)
+        holidays_df['Bank holidays'] = pd.to_datetime(holidays_df['Bank holidays'], format='%Y-%m-%d', utc=True)
+
+        df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
+        df['holiday'] = df['timestamp'].isin(holidays_df['Bank holidays'])
+        df['holiday'] = df['holiday'].astype(int)
+
+        return df
+    
     def PrecipTypeToVal(self, precip_type):
         if precip_type == 'rain':
             return 0
@@ -114,6 +125,10 @@ if __name__ == '__main__':
     df = pd.read_csv('processed_data.csv')
 
     df = creator.add_weather_data(df)
+
+    print(df.head())
+
+    df = creator.add_holidays(df)
 
     print(df.head())
 
