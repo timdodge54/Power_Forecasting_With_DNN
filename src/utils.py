@@ -3,6 +3,7 @@ import numpy as np
 import os 
 from datetime import timedelta
 import copy
+import matplotlib.pyplot as plt
 
 
 class DataSetCreator():
@@ -14,19 +15,23 @@ class DataSetCreator():
     
     def get_data(self, path='halfhourly_dataset/halfhourly_dataset/'):
         data_files = os.listdir(os.path.join(self.data_path, path))
-        df_total = pd.DataFrame()
+        df_total = None
 
         for i, file in enumerate(data_files):
-           print(f"Loading file {i+1} / {len(data_files)}: {file} into dataframe")
-           if file.endswith('.csv'):
+            print(f"Loading file {i+1} / {len(data_files)}: {file} into dataframe")
+            if file.endswith('.csv'):
                df = self.load_file_into_df(os.path.join(path,file))
-               df_total = self.combine_energy_household_count(df_total, df)
-        
-        return df_total
+               df_total = self.combine_energy_household_count(df, df_total=df_total)
 
-    def combine_energy_household_count(self, df_total: pd.DataFrame, df: pd.DataFrame) -> pd.DataFrame: 
+        df_total = df_total.reset_index()
+        df_total = df_total.drop(np.where(df_total['energy(kWh/hh)'] <= 0.0)[0])
+
+        return df_total.reset_index(drop=True)
+
+    def combine_energy_household_count(self, df: pd.DataFrame, df_total: pd.DataFrame=None ) -> pd.DataFrame: 
         df = df.rename(columns={"tstp": "timestamp"})
         df.sort_values(by='timestamp', inplace=True)
+        df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
 
         household_count = df.groupby('timestamp')[['LCLid']].nunique()
         household_count = household_count.rename(columns={"LCLid": "houses"})
@@ -37,7 +42,10 @@ class DataSetCreator():
 
         time_energy_count = total_energy.join(household_count, on='timestamp')
 
-        df_total = pd.concat([df_total, time_energy_count]).groupby('timestamp').sum()
+        if df_total is not None:
+            df_total = pd.concat([df_total, time_energy_count]).groupby('timestamp').sum()
+        else:
+            df_total = time_energy_count
 
         del df
         del time_energy_count
@@ -133,23 +141,14 @@ if __name__ == '__main__':
 
     creator = DataSetCreator('data')
 
-    #df = creator.get_data()
+    df = creator.get_data()
 
-    #print(df.head())
+    print(df.head())
 
-    #df.to_csv('processed_data.csv')
-
-    df = pd.read_csv('processed_data.csv')
-
+    df['timestamp'] = pd.to_datetime(df['timestamp'], utc=True)
 
     df = creator.add_holidays(df)
-
-    print(df.head())
-
     df = creator.add_weather_data(df)
-
-    print(df.head())
-
     df = creator.seperate_timestamp(df)
 
     print(df.head())
