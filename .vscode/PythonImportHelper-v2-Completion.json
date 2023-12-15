@@ -1,0 +1,64 @@
+[
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "copy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "copy",
+        "description": "copy",
+        "detail": "copy",
+        "documentation": {}
+    },
+    {
+        "label": "matplotlib.pyplot",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "matplotlib.pyplot",
+        "description": "matplotlib.pyplot",
+        "detail": "matplotlib.pyplot",
+        "documentation": {}
+    },
+    {
+        "label": "DataSetCreator",
+        "kind": 6,
+        "importPath": "src.utils",
+        "description": "src.utils",
+        "peekOfCode": "class DataSetCreator():\n    def __init__(self, data_path):\n        self.data_path = data_path\n    def load_file_into_df(self, file_name):\n        return pd.read_csv(os.path.join(self.data_path, file_name))\n    def get_data(self, path='halfhourly_dataset/halfhourly_dataset/'):\n        data_files = os.listdir(os.path.join(self.data_path, path))\n        df_total = None\n        for i, file in enumerate(data_files):\n            print(f\"Loading file {i+1} / {len(data_files)}: {file} into dataframe\")",
+        "detail": "src.utils",
+        "documentation": {}
+    }
+]
